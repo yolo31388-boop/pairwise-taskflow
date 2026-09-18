@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+
+# taskflow runtime data
+*.db
+*.db-wal
+*.db-shm
+
+# pytest
+.pytest-cache/
+.pytest_cache/

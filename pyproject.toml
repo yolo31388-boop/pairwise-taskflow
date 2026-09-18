@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "taskflow"
+version = "1.0.0"
+description = "基于 SQLite + asyncio 的轻量并发任务队列，仅依赖 Python 标准库"
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "MIT" }
+authors = [{ name = "taskflow" }]
+dependencies = []
+
+[project.scripts]
+taskflow = "taskflow.cli:main"
+
+[tool.setuptools]
+packages = ["taskflow"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+# 工作区里预置的 .pytest_cache 目录在部分机器上无写权限，缓存换个目录
+cache_dir = ".pytest-cache"
