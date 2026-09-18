@@ -1,0 +1,16 @@
+帮我在 Python 里写一个小工具：一个能并发跑任务的队列服务。我这边要批量处理一堆耗时的 shell 命令，想让它们自动排队、多开几个 worker 一起跑，别一个一个傻等。
+
+需求大概这样：
+- 命令行方式操作：taskflow submit 任务id 要执行的命令 提交任务；taskflow worker --workers 4 启动 worker，默认 4 个并发
+- 任务状态要可查：pending → running → succeeded / failed，失败自动重试，最多 3 次，重试间隔 1 秒、2 秒、4 秒这样指数退避，3 次还失败就进 dead
+- 数据必须持久化到 SQLite，进程被 kill -9 强杀后重启，没跑完的任务要能恢复继续跑，不能丢任务，更不能出现同一个任务同时被两个 worker 执行的情况
+- 同一个任务 id 重复提交要报"已存在"，不能覆盖或重置原任务
+- 收到 Ctrl+C 或 SIGTERM 时要优雅关闭：不再接新任务，正在执行的任务等它跑完再退出，退出码 0
+- 只准用 Python 标准库（asyncio、sqlite3、argparse 这些），别引 celery、redis 那类重依赖；pytest 可以当测试工具用，但运行时不能依赖
+
+我验收会这么测：
+1. 提交 100 个任务，3 个 worker 跑，任务内容是随机 sleep + 随机失败，最终所有任务要么 succeeded 要么 dead，不允许卡在 pending/running
+2. 跑的过程中 kill -9 杀掉进程，重启后原 running 的任务被重新执行并最终完成，全程同一个任务不能并发执行两遍（在任务命令里打印时间戳日志当证据）
+3. 优雅关闭场景：发 SIGTERM 后立刻再提交 10 个任务，重启后这 10 个都能执行
+
+写完了给我个 README 说明用法，再写点测试，pytest 一条命令能跑通就行。

@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "taskflow"
+version = "1.0.0"
+description = "A small concurrent shell-command task queue backed by SQLite (standard library only)."
+requires-python = ">=3.10"
+
+[project.scripts]
+taskflow = "taskflow.cli:main"
+
+[tool.setuptools]
+packages = ["taskflow"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --basetemp=.pytest-tmp"
